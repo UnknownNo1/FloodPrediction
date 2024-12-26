@@ -5,7 +5,6 @@ from tensorflow.keras.models import load_model
 
 # Load all models
 models = {
-    "Poisson (Randomized Search)": load("best_poisson_model.pkl"),
     "Ridge (Randomized Search)": load("ridge_random_search_model.pkl"),
     "CatBoost (Grid Search)": load("catboost_grid_search_model.pkl")
 }
