@@ -1,80 +1,151 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Flood Prediction App</title>
-    <link rel="stylesheet" href="/static/style.css">
+    <title>Flood Prediction</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 50px auto;
+            background: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            padding: 20px;
+        }
+        h1 {
+            color: #333333;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .pca-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            justify-items: center;
+            margin-bottom: 30px;
+        }
+        .pca-container img {
+            max-width: 100%;
+            border: 1px solid #cccccc;
+            border-radius: 5px;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        label {
+            font-weight: bold;
+            color: #555555;
+        }
+        input[type="number"] {
+            padding: 8px;
+            border: 1px solid #cccccc;
+            border-radius: 5px;
+        }
+        button {
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 18px;
+            text-align: center;
+        }
+        .result h2 {
+            margin: 5px 0;
+        }
+        .result h2.green {
+            color: green;
+        }
+        .result h2.blue {
+            color: blue;
+        }
+        .result h2.orange {
+            color: orange;
+        }
+        .result h2.purple {
+            color: purple;
+        }
+        .error {
+            color: red;
+            text-align: center;
+            margin-top: 20px;
+        }
+    </style>
 </head>
 <body>
-    <header>
-        <h1>Flood Prediction Dashboard</h1>
-    </header>
+    <div class="container">
+        <h1>Flood Prediction</h1>
+        <h2>PCA Visualization</h2>
 
-    <!-- PCA Visualizations -->
-    <section>
-        <h2>PCA Visualizations</h2>
+        <!-- PCA Visualizations Section -->
         <div class="pca-container">
             {% for model_name, image_url in pca_images.items() %}
-                <div class="pca-item">
-                    <h3>{{ model_name }}</h3>
-                    <img src="{{ image_url }}" alt="PCA for {{ model_name }}" />
+                <div>
+                    <h2>{{ model_name }} Model</h2>
+                    <img src="{{ image_url }}" alt="PCA Visualization for {{ model_name }}">
                 </div>
             {% endfor %}
         </div>
-    </section>
 
-    <!-- Input Form -->
-    <section>
-        <h2>Prediction Form</h2>
-        <form action="/predict" method="POST">
-            <div class="form-container">
-                {% for feature in feature_columns %}
-                    <label for="{{ feature }}">{{ feature }}</label>
-                    <input type="number" step="any" name="{{ feature }}" required><br>
-                {% endfor %}
-                <button type="submit">Predict</button>
-            </div>
+        <div style="text-align: center; margin-top: 20px;">
+            <a href="/interactive_chart" style="text-decoration: none; font-weight: bold; color: #007BFF;">View Interactive Chart</a>
+        </div>
+        
+
+        <!-- User Input Form Section -->
+        <form action="/predict" method="post">
+            {% for column in feature_columns %}
+                <label for="{{ column }}">{{ column.replace('_', ' ').capitalize() }}:</label>
+                <input type="number" id="{{ column }}" name="{{ column }}" placeholder="Enter {{ column.replace('_', ' ').lower() }}" required>
+            {% endfor %}
+            <button type="submit">Predict</button>
         </form>
-    </section>
 
-    <!-- Predictions -->
-    <section>
-        {% if ridge_pred %}
-            <h2>Predictions</h2>
-            <ul>
-                <li><strong>Ridge Model Prediction:</strong> {{ ridge_pred }}</li>
-                <li><strong>CatBoost Model Prediction:</strong> {{ catboost_pred }}</li>
-                <li><strong>Poisson Model Prediction:</strong> {{ poisson_pred }}</li>
-                <li><strong>ANN Model Prediction:</strong> {{ ann_pred }}</li>
-            </ul>
+        <!-- Results Section -->
+        {% if ridge_pred is defined %}
+            <div class="result">
+                <h2 class="green">Ridge Model Prediction: {{ ridge_pred }}</h2>
+            </div>
         {% endif %}
+
+        {% if catboost_pred is defined %}
+            <div class="result">
+                <h2 class="blue">CatBoost Model Prediction: {{ catboost_pred }}</h2>
+            </div>
+        {% endif %}
+
+        {% if poisson_pred is defined %}
+            <div class="result">
+                <h2 class="orange">Poisson Model Prediction: {{ poisson_pred }}</h2>
+            </div>
+        {% endif %}
+
+        {% if ann_pred is defined %}
+            <div class="result">
+                <h2 class="purple">ANN Model Prediction (Probability): {{ ann_pred }}</h2>
+            </div>
+        {% endif %}
+
         {% if error %}
-            <p style="color: red;">Error: {{ error }}</p>
+            <p class="error">{{ error }}</p>
         {% endif %}
-    </section>
-
-    <!-- Dataset Preview -->
-    <section>
-        <h2>Dataset Preview</h2>
-        <table>
-            <thead>
-                <tr>
-                    {% for col in dataset_head.columns %}
-                        <th>{{ col }}</th>
-                    {% endfor %}
-                </tr>
-            </thead>
-            <tbody>
-                {% for row in dataset_head.itertuples(index=False) %}
-                    <tr>
-                        {% for cell in row %}
-                            <td>{{ cell }}</td>
-                        {% endfor %}
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </section>
+    </div>
 </body>
 </html>
