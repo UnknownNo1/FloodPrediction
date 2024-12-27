@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Interactive Chart</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 50px auto;
+            background: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            padding: 20px;
+        }
+        h1 {
+            color: #333333;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Interactive Model Predictions</h1>
+        <h2>Random 10 data from dataset is picked and predicted</h2>
+        <div>
+            {{ chart_html|safe }}
+        </div>
+        <div style="text-align: center; margin-top: 20px;">
+            <a href="/" style="text-decoration: none; font-weight: bold; color: #007BFF;">Back to Main Page</a>
+        </div>
+    </div>
+</body>
+</html>

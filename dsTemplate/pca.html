@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>PCA Visualizations</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 50px auto;
+            background: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            padding: 20px;
+        }
+        h1 {
+            color: #333333;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .pca-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            justify-items: center;
+        }
+        .pca-container img {
+            max-width: 100%;
+            border: 1px solid #cccccc;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>PCA Visualizations for All Models</h1>
+        <div class="pca-container">
+            {% for model_name, image_url in pca_images.items() %}
+                <div>
+                    <h2>{{ model_name }} Model</h2>
+                    <img src="{{ image_url }}" alt="PCA Visualization for {{ model_name }}">
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</body>
+</html>

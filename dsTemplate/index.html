@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Flood Prediction</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 50px auto;
+            background: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            padding: 20px;
+        }
+        h1 {
+            color: #333333;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .pca-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            justify-items: center;
+            margin-bottom: 30px;
+        }
+        .pca-container img {
+            max-width: 100%;
+            border: 1px solid #cccccc;
+            border-radius: 5px;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        label {
+            font-weight: bold;
+            color: #555555;
+        }
+        input[type="number"] {
+            padding: 8px;
+            border: 1px solid #cccccc;
+            border-radius: 5px;
+        }
+        button {
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 18px;
+            text-align: center;
+        }
+        .result h2 {
+            margin: 5px 0;
+        }
+        .result h2.green {
+            color: green;
+        }
+        .result h2.blue {
+            color: blue;
+        }
+        .result h2.orange {
+            color: orange;
+        }
+        .result h2.purple {
+            color: purple;
+        }
+        .error {
+            color: red;
+            text-align: center;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Flood Prediction</h1>
+        <h2>PCA Visualization</h2>
+
+        <!-- PCA Visualizations Section -->
+        <div class="pca-container">
+            {% for model_name, image_url in pca_images.items() %}
+                <div>
+                    <h2>{{ model_name }} Model</h2>
+                    <img src="{{ image_url }}" alt="PCA Visualization for {{ model_name }}">
+                </div>
+            {% endfor %}
+        </div>
+
+        <div style="text-align: center; margin-top: 20px;">
+            <a href="/interactive_chart" style="text-decoration: none; font-weight: bold; color: #007BFF;">View Interactive Chart</a>
+        </div>
+        
+
+        <!-- User Input Form Section -->
+        <form action="/predict" method="post">
+            {% for column in feature_columns %}
+                <label for="{{ column }}">{{ column.replace('_', ' ').capitalize() }}:</label>
+                <input type="number" id="{{ column }}" name="{{ column }}" placeholder="Enter {{ column.replace('_', ' ').lower() }}" required>
+            {% endfor %}
+            <button type="submit">Predict</button>
+        </form>
+
+        <!-- Results Section -->
+        {% if ridge_pred is defined %}
+            <div class="result">
+                <h2 class="green">Ridge Model Prediction: {{ ridge_pred }}</h2>
+            </div>
+        {% endif %}
+
+        {% if catboost_pred is defined %}
+            <div class="result">
+                <h2 class="blue">CatBoost Model Prediction: {{ catboost_pred }}</h2>
+            </div>
+        {% endif %}
+
+        {% if poisson_pred is defined %}
+            <div class="result">
+                <h2 class="orange">Poisson Model Prediction: {{ poisson_pred }}</h2>
+            </div>
+        {% endif %}
+
+        {% if ann_pred is defined %}
+            <div class="result">
+                <h2 class="purple">ANN Model Prediction (Probability): {{ ann_pred }}</h2>
+            </div>
+        {% endif %}
+
+        {% if error %}
+            <p class="error">{{ error }}</p>
+        {% endif %}
+    </div>
+</body>
+</html>
