@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 import os
 import pickle
 
-app = Flask(__name__, template_folder="templates", static_folder="static")
+app = Flask(__name__, template_folder="dsTemplates", static_folder="static")
 
 # Load models
 ridge_model = load("ridge_random_search_model.pkl")
