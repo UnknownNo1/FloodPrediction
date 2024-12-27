@@ -113,7 +113,7 @@
         <form action="/predict" method="post">
             {% for column in feature_columns %}
                 <label for="{{ column }}">{{ column.replace('_', ' ').capitalize() }}:</label>
-                <input type="number" id="{{ column }}" name="{{ column }}" placeholder="Enter {{ column.replace('_', ' ').lower() }}" required>
+                <input type="number" id="{{ column }}" name="{{ column }}" placeholder="Enter {{ column.replace('_', ' ').lower() }}" min = "0" max = "10"required>
             {% endfor %}
             <button type="submit">Predict</button>
         </form>
