@@ -52,7 +52,9 @@ def index():
         dataset_head=dataset_head
     )
 
-
+# Function to clip predictions to [0, 1]
+def clip_prediction(value):
+    return max(0, min(value, 1))
 @app.route('/predict', methods=['POST'])
 def predict():
     try:
@@ -70,13 +72,18 @@ def predict():
         # Scale the input features
         features_df_scaled = scaler.transform(features_df)
 
-        # Make predictions
-        ridge_pred = ridge_model.predict(features_df)[0]
-        catboost_pred = catboost_model.predict(features_df)[0]
-        poisson_pred = poisson_model.predict(features_df)[0]
-        # Apply sigmoid transformation to ANN predictions
+        # Ridge Model Prediction
+        ridge_pred = clip_prediction(ridge_model.predict(features_df)[0])
+        
+        # CatBoost Model Prediction
+        catboost_pred = clip_prediction(catboost_model.predict(features_df)[0])
+        
+        # Poisson Model Prediction
+        poisson_pred = clip_prediction(poisson_model.predict(features_df)[0])
+        
+        # ANN Model Prediction (Already probability-based, but clip for safety)
         logit_output = ann_model.predict(features_df_scaled)[0][0]
-        ann_pred = 1 / (1 + np.exp(-logit_output))
+        ann_pred = clip_prediction(1 / (1 + np.exp(-logit_output)))
         pca_images = {
     "Ridge Model": "/static/pca_ridge.png",
     "CatBoost Model": "/static/pca_catboost.png",
